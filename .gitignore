@@ -1,0 +1,27 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables de entorno (secretos reales — .env.example sí se sube)
+.env
+
+# Base de datos local (si alguna vez se usa SQLite en vez de Docker)
+db.sqlite3
+
+# macOS
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+
+#Documentos
+PROGRESO.md
+PLAN.md
+COMANDOS.md
