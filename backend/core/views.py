@@ -1,9 +1,9 @@
 from django.conf import settings
-from rest_framework.request import Request
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 def set_jwt_cookies(response):
     if response.status_code == 200:
@@ -18,7 +18,7 @@ def set_jwt_cookies(response):
                 httponly=True,
                 samesite='Lax'
             )
-            
+
         if refres_token:
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
@@ -75,5 +75,5 @@ class PerfilUsuarioView(APIView):
             'rol': request.user.rol,
             'departamento_id': request.user.departamento_id,
             'departamento_nombre': request.user.departamento.nombre if request.user.departamento else None,
-        })
+    })
 

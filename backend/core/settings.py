@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',
     'departamentos',
+    'tickets',
 ]
 
 AUTH_USER_MODEL = "core.User"
