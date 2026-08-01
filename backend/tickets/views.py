@@ -1,12 +1,13 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from datetime import timedelta
 from django.utils import timezone
 from .models import Ticket
-from .serializers import TicketSerializer
+from .serializers import TicketSerializer, ComentarioSerializer
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 
 User = get_user_model()
@@ -58,3 +59,25 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(tickets, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get', 'post'])
+    def comentarios(self, request, pk=None):
+        ticket = self.get_object()
+
+        if request.method == 'POST':
+            serializer = ComentarioSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            with transaction.atomic():
+                serializer.save(ticket=ticket, autor=request.user)
+
+                if request.user.rol == User.Rol.CLIENTE and ticket.estado in [
+                    Ticket.Estado.ESPERANDO_CLIENTE,
+                    Ticket.Estado.RESUELTO,
+                ]:
+                    ticket.estado = Ticket.Estado.EN_REVISION
+                    ticket.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        serializer = ComentarioSerializer(ticket.comentarios.all(), many=True)
+        return Response(serializer.data)

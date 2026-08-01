@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ticket
+from .models import Ticket, ComentarioTicket
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,3 +29,10 @@ class TicketSerializer(serializers.ModelSerializer):
             })
         return data
 
+class ComentarioSerializer(serializers.ModelSerializer):
+    autor_username = serializers.CharField(source='autor.username', read_only=True)
+
+    class Meta:
+        model = ComentarioTicket
+        fields = ['id', 'ticket', 'autor', 'autor_username', 'texto', 'fecha_creacion']
+        read_only_fields = ['ticket', 'autor', 'fecha_creacion']

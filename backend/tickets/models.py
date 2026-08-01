@@ -26,7 +26,7 @@ class Ticket(models.Model):
         related_name='tickets_solicitados'
     )
     agente_asignado = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -44,3 +44,23 @@ class Ticket(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.estado}] {self.titulo}'
+
+class ComentarioTicket(models.Model):
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name='comentarios'
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='comentarios'
+    )
+    texto = models.TextField()
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['fecha_creacion']
+
+    def __str__(self) -> str:
+        return f'Comentario de {self.autor.username} en el ticket {self.ticket_id}'
