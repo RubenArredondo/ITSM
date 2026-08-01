@@ -5,7 +5,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = '__all__'
-        read_only_fields = ['fecha_vencimiento_sla', 'fecha_creacion', 'fecha_actualizacion']
+        read_only_fields = ['solicitante', 'fecha_vencimiento_sla', 'fecha_creacion', 'fecha_actualizacion']
 
     def validate(self, data):
         if self.instance is not None:

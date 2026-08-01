@@ -6,12 +6,26 @@ from django.utils import timezone
 from .models import Ticket
 from .serializers import TicketSerializer
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Ticket.objects.select_related(
+            'solicitante', 'agente_asignado', 'departamento'
+        )
+
+        if user.rol == User.Rol.CLIENTE:
+            return queryset.filter(solicitante=user)
+
+        return queryset.filter(departamento=user.departamento)
+
 
     HORAS_SLA = {
         Ticket.Prioridad.BAJA: 72,  # 72 horas
@@ -24,7 +38,10 @@ class TicketViewSet(viewsets.ModelViewSet):
         prioridad = serializer.validated_data.get('prioridad', Ticket.Prioridad.BAJA)
         horas = self.HORAS_SLA[prioridad]
         fecha_vencimiento = timezone.now() + timedelta(hours=horas)
-        serializer.save(fecha_vencimiento_sla=fecha_vencimiento)
+        serializer.save(
+            solicitante = self.request.user,
+            fecha_vencimiento_sla=fecha_vencimiento,
+        )
 
     @action(detail=False, methods=['get'])
     def urgencias(self, request):
