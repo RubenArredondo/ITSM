@@ -1,14 +1,21 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from .serializers import RegisterSerializer
 from drf_spectacular.types import OpenApiTypes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
     OpenApiExample,
 )
+
+User = get_user_model()
+
 
 def set_jwt_cookies(response):
     if response.status_code == 200:
@@ -107,3 +114,13 @@ class PerfilUsuarioView(APIView):
             'departamento_nombre': request.user.departamento.nombre if request.user.departamento else None,
     })
 
+@extend_schema_view(
+    post=extend_schema(
+        summary='Registro de un nuevo cliente',
+        description='Crea una cuenta con el rol de Cliente'
+    )
+)
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
