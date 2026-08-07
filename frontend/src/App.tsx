@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import ListaTickets from './pages/ListaTickets';
 import Registro from './pages/Registro';
+import DashboardLayout from './layouts/DashboardLayout';
 
 export default function App() {
   return (
@@ -13,9 +14,10 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/tickets" element={<ListaTickets />} />
+            <Route element={<DashboardLayout />}>
+              <Route path="/tickets" element={<ListaTickets />} />
+            </Route>
           </Route>
-
           <Route path="*" element={<Navigate to="/tickets" replace />} />
         </Routes>
       </BrowserRouter>

@@ -29,6 +29,7 @@ export type Ticket = {
     solicitante: number;
     agente_asignado: number | null;
     departamento: number;
+    solicitante_username: string;
 };
 
 export type Comentario = {

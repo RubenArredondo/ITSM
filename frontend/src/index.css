@@ -10,3 +10,12 @@
   --color-borde: #E5E7EB;
   --color-fondo: #FFFFFF;
 }
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+}
