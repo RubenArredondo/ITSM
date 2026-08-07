@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from drf_spectacular.utils import extend_schema
 from datetime import timedelta
 from django.utils import timezone
 from .models import Ticket
@@ -43,7 +44,11 @@ class TicketViewSet(viewsets.ModelViewSet):
             solicitante = self.request.user,
             fecha_vencimiento_sla=fecha_vencimiento,
         )
-
+    # Documentacion Swagger
+    @extend_schema(
+            summary = 'Tickets del departamento que vencen en 2 hrs',
+            responses = {200: TicketSerializer(many=True)},
+    )
     @action(detail=False, methods=['get'])
     def urgencias(self, request):
         limite = timezone.now() +timedelta(hours=2)
@@ -59,6 +64,12 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(tickets, many=True)
         return Response(serializer.data)
 
+    # Documentacion Swagger
+    @extend_schema(
+        summary = 'Historial de comentarios del ticket (GET) o agregar uno nuevo (POST)',
+        request = ComentarioSerializer,
+        responses = {200: ComentarioSerializer(many=True)},
+    )
     @action(detail=True, methods=['get', 'post'])
     def comentarios(self, request, pk=None):
         ticket = self.get_object()
@@ -77,7 +88,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                     ticket.estado = Ticket.Estado.EN_REVISION
                     ticket.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data)
 
         serializer = ComentarioSerializer(ticket.comentarios.all(), many=True)
         return Response(serializer.data)

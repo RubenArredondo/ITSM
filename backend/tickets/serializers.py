@@ -23,8 +23,7 @@ class TicketSerializer(serializers.ModelSerializer):
             if nuevo_estado == Ticket.Estado.CERRADO and estado_actual != Ticket.Estado.RESUELTO:
                 raise serializers.ValidationError({
                 'estado': (
-                    f'No se puede cerrar un ticket en estado {estado_actual}. '
-                    'Debe estar RESUELTO antes de cerrarse.'
+                    f'No se puede cerrar un ticket en estado {estado_actual}'
                 )
             })
         return data
